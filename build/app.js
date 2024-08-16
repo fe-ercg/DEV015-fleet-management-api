@@ -6,9 +6,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const app = (0, express_1.default)();
 const PORT = 3001;
-app.use('/', (req, res) => {
-    res.send('Hello world!');
+// app.use('/', (req: Request, res: Response): void => {
+//     res.send('Hi multiverse');
+// });
+//Ruta GET
+app.get('/taxis', (req, res) => {
+    res.send('hay un GET taxis *.*');
 });
 app.listen(PORT, () => {
-    console.log('SERVER IS UP ON PORT:', PORT);
+    console.log('SERVER IS UP :D ON PORT:', PORT);
 });
