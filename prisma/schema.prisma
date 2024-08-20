@@ -1,0 +1,35 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+}
+
+model taxis {
+  id    Int    @id @default(autoincrement()) // Llave primaria con auto-incremento
+  plate String @unique                      // Campo "plate" como una cadena única
+  
+  // Relación con trajectory
+  trajectories trajectories[]  // Un taxi puede tener muchas trayectorias
+}
+
+model trajectories {
+  id Int @id @default(autoincrement())
+  taxi_id Int
+  date  DateTime
+  latitude  Float
+  longitude Float
+
+  taxis      taxis      @relation(fields: [taxi_id], references: [id])
+
+  @@index([taxi_id])
+}
