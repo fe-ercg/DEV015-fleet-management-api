@@ -15,25 +15,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const client_1 = __importDefault(require("./client"));
 const app = (0, express_1.default)();
-const PORT = 3001;
-// app.use('/', (req: Request, res: Response): void => {
-//     res.send('Hi multiverse');
-// });
 //Ruta GET
-app.get('/taxis', (req, res) => {
-    const taxis = [
-        { id: 123, plate: 'holaa' },
-        { id: 345, plate: 'apoio' },
-        { id: 566, plate: 'guasa' }
-    ];
-    res.json(taxis);
-});
-app.listen(PORT, () => {
-    console.log('SERVER IS UP :D ON PORT:', PORT);
-});
-function main() {
-    return __awaiter(this, void 0, void 0, function* () {
-        const allUsers = yield client_1.default;
+app.get('/taxis', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { plate, page = 1, limit = 10 } = req.query;
+    const plates = plate ? plate.toString() : '';
+    const pages = parseInt(page, 10) || 1;
+    const limits = parseInt(limit, 10) || 10;
+    const findPlate = plates ? { plate: { contains: plates } } : {};
+    const taxis = yield client_1.default.taxis.findMany({
+        // where: {plate: {contains: '12'}},
+        where: findPlate,
+        skip: (pages - 1) * limits,
+        take: limits,
     });
-}
-main();
+    res.json(taxis);
+}));
+exports.default = app;
