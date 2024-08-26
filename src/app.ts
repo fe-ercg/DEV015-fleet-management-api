@@ -5,7 +5,7 @@ import { get } from 'http';
 
 const app: Application = express();
 
-const PORT: number = 3001;
+
 
 //Ruta GET
 app.get('/taxis', async (req: Request, res: Response) => {
@@ -26,7 +26,4 @@ app.get('/taxis', async (req: Request, res: Response) => {
     res.json(taxis)
 })
 
-app.listen(PORT, (): void => {
-    console.log('SERVER IS UP :D ON PORT:', PORT);
-});
-
+export default app;
