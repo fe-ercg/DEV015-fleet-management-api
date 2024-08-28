@@ -19,6 +19,14 @@ const getTaxisController = (req, res) => __awaiter(void 0, void 0, void 0, funct
     try {
         const taxis = yield (0, taxisModel_1.getTaxis)(plates, pages, limits);
         res.status(200).json(taxis);
+        if (isNaN(pages) || pages < 1) {
+            res.status(400).json({ error: "invalid value of page -.-" });
+        }
+        ;
+        if (isNaN(limits) || limits < 1) {
+            res.status(400).json({ error: "invalid value of limit -.-" });
+        }
+        ;
     }
     catch (error) {
         res.status(500).json({ message: 'Error fetching taxis ->', error });
