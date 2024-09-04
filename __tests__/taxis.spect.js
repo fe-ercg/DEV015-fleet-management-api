@@ -12,22 +12,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getTrajectories = void 0;
-const client_1 = __importDefault(require("../client"));
-const getTrajectories = (taxiId, date) => __awaiter(void 0, void 0, void 0, function* () {
-    const findTaxi = taxiId;
-    const findDate = date;
-    const results = yield client_1.default.$queryRaw `
-        SELECT 
-            trajectories.taxi_id,
-            taxis.plate,
-            trajectories.date,
-            trajectories.latitude,
-            trajectories.longitude
-        FROM "trajectories"
-        JOIN "taxis" ON trajectories.taxi_id = taxis.id
-        WHERE taxi_id = ${findTaxi} AND DATE("date") = ${new Date(findDate)};
-    `;
-    return results;
+const supertest_1 = __importDefault(require("supertest"));
+const app_1 = __importDefault(require("../src/app"));
+const node_test_1 = require("node:test");
+// jest.mock("../src/models/taxisModel");
+//integridad de datos
+(0, node_test_1.describe)("GET /taxis", () => {
+    it('should return results that contain the "plate" parameter value', () => __awaiter(void 0, void 0, void 0, function* () {
+        const plateValue = 'EF';
+        const response = yield (0, supertest_1.default)(app_1.default)
+            .get("/taxis")
+            .query({ plate: plateValue });
+        expect(response.status).toEqual(200);
+        expect(response.body).toBeDefined();
+        expect(Array.isArray(response.body)).toBe(true);
+        response.body.forEach((item) => {
+            expect(item.plate).toMatch(plateValue);
+        });
+    }));
 });
-exports.getTrajectories = getTrajectories;

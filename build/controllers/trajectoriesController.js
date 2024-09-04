@@ -12,16 +12,40 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getTrajectoriesController = void 0;
 const trajectoriesModel_1 = require("../models/trajectoriesModel");
 const getTrajectoriesController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    // const taxisId = parseInt(req.query.taxiId as string, 10);
-    // const dateStr = req.query.date as string;
-    // const [ day, month, year ] = dateStr.split('-').map(Number);
-    // const [ day, month, year ] = dateStr.split('-').map(n => parseInt(n, 10));
-    // const dateReversed = [ year, month, day].join('-');
-    // const dateReversed = new Date (dateStr.split('-').reverse().join('-'));
+    const { taxiId, date } = req.query;
+    // obtain taxiId
+    const taxisId = taxiId ? parseInt(req.query.taxiId, 10) : 0;
+    // obtain date
+    const dateStr = date ? req.query.date : '';
+    const dateReversed = dateStr ? dateStr.split('-').reverse().join('-') : '';
+    const isValidDateFormat = (dat) => {
+        return /^\d{4}-\d{2}-\d{2}$/.test(dat);
+    };
+    if (dateReversed && !isValidDateFormat(dateReversed)) {
+        return res.status(400).json({ error: "date badly formatted >-<" });
+    }
+    if (!dateStr) {
+        return res.status(400).json({ error: "missing date 7-7" });
+    }
+    if (!taxisId) {
+        return res.status(400).json({ error: "missing taxiId 7-7" });
+    }
     try {
-        // const trajectories = await getTrajectories(taxisId, dateReversed);
-        const trajectories = yield (0, trajectoriesModel_1.getTrajectories)();
-        res.status(200).json(trajectories);
+        const trajectories = yield (0, trajectoriesModel_1.getTrajectories)(taxisId, dateReversed);
+        if (trajectories.length === 0) {
+            return res.status(404).json({ error: "taxiId its not found 0w0" });
+        }
+        const trajectoriesResponse = trajectories.map(response => {
+            return {
+                taxiId: response.taxi_id,
+                plate: response.plate,
+                date: response.date,
+                latitude: response.latitude,
+                longitude: response.longitude
+            };
+        });
+        // res.status(200).json(trajectories);
+        res.status(200).json(trajectoriesResponse);
     }
     catch (error) {
         res.status(500).json({ message: 'Error fetching trajectories ->', error });
