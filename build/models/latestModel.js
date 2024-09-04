@@ -12,12 +12,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getTrajectories = void 0;
+exports.getLatest = void 0;
 const client_1 = __importDefault(require("../client"));
-const getTrajectories = (taxiId, date) => __awaiter(void 0, void 0, void 0, function* () {
-    const findTaxi = taxiId;
-    const findDate = date;
-    const results = yield client_1.default.$queryRaw `
+const getLatest = () => __awaiter(void 0, void 0, void 0, function* () {
+    // const orderTrajectories = await prisma.trajectories.findMany({
+    //     orderBy: {
+    //         date: 'desc',
+    //     }
+    // })
+    return yield client_1.default.$queryRaw `
         SELECT 
             trajectories.taxi_id,
             taxis.plate,
@@ -26,8 +29,12 @@ const getTrajectories = (taxiId, date) => __awaiter(void 0, void 0, void 0, func
             trajectories.longitude
         FROM "trajectories"
         JOIN "taxis" ON trajectories.taxi_id = taxis.id
-        WHERE taxi_id = ${findTaxi} AND DATE("date") = ${new Date(findDate)};
+        WHERE
+            trajectories.date = (
+                SELECT MAX(trajectories.date)
+                FROM trajectories
+                WHERE trajectories.taxi_id = taxis.id
+            );
     `;
-    return results;
 });
-exports.getTrajectories = getTrajectories;
+exports.getLatest = getLatest;
