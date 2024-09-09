@@ -21,14 +21,14 @@ const getLatest = () => __awaiter(void 0, void 0, void 0, function* () {
     //     }
     // })
     return yield client_1.default.$queryRaw `
-        SELECT 
+        SELECT DISTINCT ON (trajectories.taxi_id)
             trajectories.taxi_id,
             taxis.plate,
             trajectories.date,
             trajectories.latitude,
             trajectories.longitude
-        FROM "trajectories"
-        JOIN "taxis" ON trajectories.taxi_id = taxis.id
+        FROM "taxis"
+        JOIN "trajectories" ON taxis.id = trajectories.taxi_id
         WHERE
             trajectories.date = (
                 SELECT MAX(trajectories.date)
