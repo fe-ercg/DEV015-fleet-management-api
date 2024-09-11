@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUsersController = exports.createUserController = void 0;
+exports.patchUsersController = exports.getUsersController = exports.createUserController = void 0;
 const usersModel_1 = require("../models/usersModel");
 const client_1 = __importDefault(require("../client"));
 const createUserController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -38,7 +38,7 @@ const createUserController = (req, res) => __awaiter(void 0, void 0, void 0, fun
         res.status(201).json(newUserResponse);
     }
     catch (error) {
-        console.error('error 50', error);
+        // console.error('error 50', error)
         res.status(500).json({ message: 'error al crear un usuario <.<', error });
     }
 });
@@ -58,7 +58,14 @@ const getUsersController = (req, res) => __awaiter(void 0, void 0, void 0, funct
     ;
     try {
         const users = yield (0, usersModel_1.getUsers)(pages, limits);
-        res.status(200).json(users);
+        const getUsersResponse = users.map(response => {
+            return {
+                id: response.id,
+                name: response.name,
+                email: response.email
+            };
+        });
+        res.status(200).json(getUsersResponse);
     }
     catch (error) {
         res.status(500).json({ message: 'Error fetching users ->', error });
@@ -66,3 +73,32 @@ const getUsersController = (req, res) => __awaiter(void 0, void 0, void 0, funct
     ;
 });
 exports.getUsersController = getUsersController;
+//-------------------------PATCH-----------------------------------
+const patchUsersController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { name } = req.body;
+        const { uid } = req.params;
+        if (!name || !uid) {
+            return res.status(400).json({ error: 'no hay ningun nombre para cambiar' });
+        }
+        let userIdCheck = null;
+        let userEmailCheck = null;
+        if (!isNaN(Number(uid))) {
+            userIdCheck = parseInt(uid, 10);
+        }
+        else {
+            userEmailCheck = uid;
+        }
+        const patchUser = yield (0, usersModel_1.patchUsers)(userIdCheck, userEmailCheck, name);
+        const patchUserResponse = {
+            id: patchUser.id,
+            name: patchUser.name,
+            email: patchUser.email
+        };
+        res.status(200).json(patchUserResponse);
+    }
+    catch (error) {
+        res.status(404).json({ error: 'no se pudo actualizar al usuario' });
+    }
+});
+exports.patchUsersController = patchUsersController;

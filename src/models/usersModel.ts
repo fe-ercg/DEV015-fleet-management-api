@@ -11,7 +11,7 @@ export const createUser = (userData: CreateUser) => {
         }
     })
 }
-
+//-------------------------GET--------------------------------
 export const getUsers = async (page: number, limit: number) => {
     return await prisma.users.findMany({
         skip: (page-1)*limit,
@@ -19,12 +19,21 @@ export const getUsers = async (page: number, limit: number) => {
     })
 }
 
-export const patchUsers = (userId: number, userEmail: string, userName: string) => {
-    const searchParams = userId ? {id: userId} : { email: userEmail};
+// ----------------PATCH-----------------------------------------
+export const patchUsers = (userId: number | null, userEmail: string | null, userName: string) => {
+    
+    let searchParams: { id?: number, email?: string } = {};
 
+    if(userId){
+        searchParams.id = userId;
+    } else if ( userEmail ){
+        searchParams.email = userEmail;
+    } else {
+        throw new Error('id o email invalidos')
+    }
 
     return prisma.users.update({
-        where: searchParams,
+        where: searchParams as {id: number} | {email: string},
         data: {
             name: userName
         }
