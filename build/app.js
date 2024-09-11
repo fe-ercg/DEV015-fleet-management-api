@@ -9,6 +9,7 @@ const trajectoriesRoutes_1 = __importDefault(require("./routes/trajectoriesRoute
 const latestRoutes_1 = __importDefault(require("./routes/latestRoutes"));
 const usersRoutes_1 = __importDefault(require("./routes/usersRoutes"));
 const app = (0, express_1.default)();
+app.use(express_1.default.json());
 app.use(taxisRoutes_1.default);
 app.use(trajectoriesRoutes_1.default);
 app.use(latestRoutes_1.default);
