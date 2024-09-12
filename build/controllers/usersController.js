@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.patchUsersController = exports.getUsersController = exports.createUserController = void 0;
+exports.deleteUserConstroller = exports.patchUsersController = exports.getUsersController = exports.createUserController = void 0;
 const usersModel_1 = require("../models/usersModel");
 const client_1 = __importDefault(require("../client"));
 const createUserController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -102,3 +102,31 @@ const patchUsersController = (req, res) => __awaiter(void 0, void 0, void 0, fun
     }
 });
 exports.patchUsersController = patchUsersController;
+//----------------------DELETE--------------------------------------
+const deleteUserConstroller = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { uid } = req.params;
+        if (!uid) {
+            return res.status(400).json({ error: 'no hay ningun nombre para cambiar' });
+        }
+        let userIdCheck = null;
+        let userEmailCheck = null;
+        if (!isNaN(Number(uid))) {
+            userIdCheck = parseInt(uid, 10);
+        }
+        else {
+            userEmailCheck = uid;
+        }
+        const deletUsers = yield (0, usersModel_1.deleteUser)(userIdCheck, userEmailCheck);
+        const deletUsersResponse = {
+            id: deletUsers.id,
+            name: deletUsers.name,
+            email: deletUsers.email
+        };
+        res.status(200).json(deletUsersResponse);
+    }
+    catch (error) {
+        res.status(404).json({ error: 'no se pudo borrar al usuario' });
+    }
+});
+exports.deleteUserConstroller = deleteUserConstroller;

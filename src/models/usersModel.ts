@@ -21,9 +21,9 @@ export const getUsers = async (page: number, limit: number) => {
 
 // ----------------PATCH-----------------------------------------
 export const patchUsers = (userId: number | null, userEmail: string | null, userName: string) => {
-    
-    let searchParams: { id?: number, email?: string } = {};
 
+    let searchParams: { id?: number, email?: string } = {};
+    
     if(userId){
         searchParams.id = userId;
     } else if ( userEmail ){
@@ -37,5 +37,22 @@ export const patchUsers = (userId: number | null, userEmail: string | null, user
         data: {
             name: userName
         }
+    })
+}
+
+//-------------------------DELETE------------------------------------
+export const deleteUser = (userId: number | null, userEmail: string | null) => {
+    let searchParams: { id?: number, email?: string } = {};
+    
+    if(userId){
+        searchParams.id = userId;
+    } else if ( userEmail ){
+        searchParams.email = userEmail;
+    } else {
+        throw new Error('id o email invalidos')
+    }
+    
+    return prisma.users.delete({
+        where: searchParams as {id: number} | {email: string},
     })
 }

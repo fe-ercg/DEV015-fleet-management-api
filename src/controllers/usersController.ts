@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createUser, getUsers, patchUsers } from "../models/usersModel";
+import { createUser, getUsers, patchUsers, deleteUser } from "../models/usersModel";
 import prisma from "../client";
 import { error } from "console";
 
@@ -95,5 +95,37 @@ export const patchUsersController = async ( req: Request, res: Response ) => {
         res.status(200).json(patchUserResponse)
     } catch (error){
         res.status(404).json({error: 'no se pudo actualizar al usuario'})
+    }
+}
+
+//----------------------DELETE--------------------------------------
+export const deleteUserConstroller = async ( req: Request, res: Response ) => {
+    try{
+        const {uid} = req.params;
+        
+        if(!uid) {
+            return res.status(400).json({error: 'no hay ningun nombre para cambiar'})
+        }
+
+        let userIdCheck: number | null = null;
+        let userEmailCheck: string | null = null;
+
+        if(!isNaN(Number(uid))) {
+            userIdCheck = parseInt(uid, 10)
+        } else {
+            userEmailCheck = uid;
+        }
+        
+        const deletUsers = await deleteUser(userIdCheck, userEmailCheck);
+        
+        const deletUsersResponse = {
+            id: deletUsers.id,
+            name: deletUsers.name,
+            email: deletUsers.email
+        }
+        
+        res.status(200).json(deletUsersResponse)
+    } catch (error) {
+        res.status(404).json({error: 'no se pudo borrar al usuario'})
     }
 }
