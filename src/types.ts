@@ -6,3 +6,9 @@ export type Trajectory = {
     latitude: number;
     longitude: number;
 };
+
+export type CreateUser = {
+    name: string;
+    email: string;
+    password: string;
+}

@@ -18,7 +18,7 @@ const getLatestController = (req, res) => __awaiter(void 0, void 0, void 0, func
             return {
                 taxiId: response.taxi_id,
                 plate: response.plate,
-                date: response.date,
+                timestamp: response.date,
                 latitude: response.latitude,
                 longitude: response.longitude
             };
