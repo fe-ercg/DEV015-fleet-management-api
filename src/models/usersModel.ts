@@ -56,3 +56,7 @@ export const deleteUser = (userId: number | null, userEmail: string | null) => {
         where: searchParams as {id: number} | {email: string},
     })
 }
+///-----------------------DELETE ALL-------------------------
+export const deletaAll = () => {
+    return prisma.users.deleteMany();
+}

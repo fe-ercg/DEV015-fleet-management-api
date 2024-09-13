@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createUser, getUsers, patchUsers, deleteUser } from "../models/usersModel";
+import { createUser, getUsers, patchUsers, deleteUser, deletaAll } from "../models/usersModel";
 import prisma from "../client";
 import { error } from "console";
 
@@ -128,4 +128,10 @@ export const deleteUserConstroller = async ( req: Request, res: Response ) => {
     } catch (error) {
         res.status(404).json({error: 'no se pudo borrar al usuario'})
     }
+}
+
+//---------------------------------DELETE ALL----------------------------------
+export const deletaAllController = async (req: Request, res: Response ) => {
+    await deletaAll();
+    res.status(204).json()
 }

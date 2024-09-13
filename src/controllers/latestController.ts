@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { getLatest } from "../models/latestModel";
 import { Trajectory } from "../types";
-import { timeStamp } from "console";
 
 export const getLatestController = async (req: Request, res: Response) => {
     try {

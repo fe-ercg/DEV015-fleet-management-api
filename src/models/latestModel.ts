@@ -2,12 +2,6 @@ import prisma from "../client";
 import { Trajectory } from "../types";
 
 export const getLatest = async () => {
-    // const orderTrajectories = await prisma.trajectories.findMany({
-    //     orderBy: {
-    //         date: 'desc',
-    //     }
-    // })
-
 
     return await prisma.$queryRaw<Trajectory[]>`
         SELECT DISTINCT ON (trajectories.taxi_id)
