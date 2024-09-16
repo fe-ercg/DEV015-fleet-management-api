@@ -3,12 +3,13 @@ import { createUser, getUsers, patchUsers, deleteUser, deletaAll } from "../mode
 import prisma from "../client";
 import { error } from "console";
 
+//-------------------------------POST-------------------------------------------
 export const createUserController = async ( req: Request, res: Response ) => {
     try {
         const { name, email, password } = req.body;
 
         if(!name || !email || !password){
-            return res.status(400).json({message: 'debes llenar todos los datos del usuario'})
+            return res.status(400).json({error: 'debes llenar todos los datos del usuario'})
         }
 
         const emailValidation = await prisma.users.findUnique({
@@ -17,7 +18,7 @@ export const createUserController = async ( req: Request, res: Response ) => {
             }
         })
         if(emailValidation) {
-            return res.status(409).json({message: 'ya hay un usuario con el mismo email'})
+            return res.status(409).json({error: 'ya hay un usuario con el mismo email'})
         }
 
         const newUser = await createUser({name, email, password});
@@ -27,10 +28,10 @@ export const createUserController = async ( req: Request, res: Response ) => {
             email: newUser.email
         }
         res.status(201).json(newUserResponse);
-    } catch(error){
+    } catch(e){
 
         // console.error('error 50', error)
-        res.status(500).json({message: 'error al crear un usuario <.<', error})
+        res.status(500).json({error: 'error al crear un usuario <.<', e})
     }
 }
 

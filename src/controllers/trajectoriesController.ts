@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getTrajectories } from "../models/trajectoriesModel";
+import { getTrajectories, getLatestTrajectories } from "../models/trajectoriesModel";
 import { Trajectory } from "../types";
 
 export const getTrajectoriesController = async (req: Request, res: Response) => {
@@ -47,5 +47,25 @@ export const getTrajectoriesController = async (req: Request, res: Response) => 
         res.status(200).json(trajectoriesResponse);
     } catch (error){
         res.status(500).json({message: 'Error fetching trajectories ->', error})
+    };
+}
+
+//-----------------------------latest trajectories-------------------
+export const getLatestController = async (req: Request, res: Response) => {
+    try {
+        const latests: Trajectory[] = await getLatestTrajectories();
+
+        const latestsResponse = latests.map(response => {
+            return {
+                taxiId: response.taxi_id,
+                plate: response.plate,
+                timestamp: response.date,
+                latitude: response.latitude,
+                longitude: response.longitude
+            }
+        })
+        res.status(200).json(latestsResponse)
+    } catch (error) {
+        res.status(500).json({message: 'Error fetching latest trajectories ->', error})
     };
 }
