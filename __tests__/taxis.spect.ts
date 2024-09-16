@@ -1,6 +1,5 @@
 import request from "supertest";
 import app from "../src/app";
-import { getTaxis } from "../src/models/taxisModel";
 import { describe } from "node:test";
 
 // jest.mock("../src/models/taxisModel");
@@ -19,6 +18,7 @@ describe("GET /taxis", () => {
         expect(response.body).toBeDefined();
         expect(Array.isArray(response.body)).toBe(true);
 
+        // console.log(response);
         response.body.forEach((item: any) => {
             expect(item.plate).toMatch(plateValue);
         })
