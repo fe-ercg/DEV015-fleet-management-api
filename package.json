@@ -9,7 +9,6 @@
   "scripts": {
     "test": "jest",
     "start": "node ./build/index.js",
-    "build": "npx tsc",
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts"
   },
   "author": "",
