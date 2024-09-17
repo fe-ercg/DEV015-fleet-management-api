@@ -2,12 +2,13 @@ import { skip } from "node:test";
 import prisma from "../client";
 import { CreateUser } from "../types";
 
-export const createUser = (userData: CreateUser) => {
+//---------------------POST--------------------------
+export const createUser = (name: string, email:string, password: string) => {
     return prisma.users.create({
         data: {
-            name: userData.name,
-            email: userData.email,
-            password: userData.password
+            name,
+            email,
+            password
         }
     })
 }

@@ -12,14 +12,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUser = exports.patchUsers = exports.getUsers = exports.createUser = void 0;
+exports.deletaAll = exports.deleteUser = exports.patchUsers = exports.getUsers = exports.createUser = void 0;
 const client_1 = __importDefault(require("../client"));
-const createUser = (userData) => {
+//---------------------POST--------------------------
+const createUser = (name, email, password) => {
     return client_1.default.users.create({
         data: {
-            name: userData.name,
-            email: userData.email,
-            password: userData.password
+            name,
+            email,
+            password
         }
     });
 };
@@ -69,3 +70,8 @@ const deleteUser = (userId, userEmail) => {
     });
 };
 exports.deleteUser = deleteUser;
+///-----------------------DELETE ALL-------------------------
+const deletaAll = () => {
+    return client_1.default.users.deleteMany();
+};
+exports.deletaAll = deletaAll;
