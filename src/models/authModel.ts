@@ -5,7 +5,3 @@ export const findUser = (email: string, password: string ) => {
         where: { email }
     })
 }
-
-export const passwordValid = (email: string, password: string ) => {
-    return 
-}
