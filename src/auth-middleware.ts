@@ -16,7 +16,7 @@ export const authToken = ( req: Request, res: Response, next: NextFunction) => {
             return res.status(401).json({error: 'token no valido'})
         }
 
-        // req.locals.user = user;
+        res.locals.user = user;
 
         next()
     })
