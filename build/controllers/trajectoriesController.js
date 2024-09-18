@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getTrajectoriesController = void 0;
+exports.getLatestController = exports.getTrajectoriesController = void 0;
 const trajectoriesModel_1 = require("../models/trajectoriesModel");
 const getTrajectoriesController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { taxiId, date } = req.query;
@@ -53,3 +53,24 @@ const getTrajectoriesController = (req, res) => __awaiter(void 0, void 0, void 0
     ;
 });
 exports.getTrajectoriesController = getTrajectoriesController;
+//-----------------------------latest trajectories-------------------
+const getLatestController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const latests = yield (0, trajectoriesModel_1.getLatestTrajectories)();
+        const latestsResponse = latests.map(response => {
+            return {
+                taxiId: response.taxi_id,
+                plate: response.plate,
+                timestamp: response.date,
+                latitude: response.latitude,
+                longitude: response.longitude
+            };
+        });
+        res.status(200).json(latestsResponse);
+    }
+    catch (error) {
+        res.status(500).json({ message: 'Error fetching latest trajectories ->', error });
+    }
+    ;
+});
+exports.getLatestController = getLatestController;

@@ -1,27 +1,29 @@
 import { Request, Response } from "express";
 import { createUser, getUsers, patchUsers, deleteUser, deletaAll } from "../models/usersModel";
 import prisma from "../client";
-import { error } from "console";
+import bcrypt from "bcrypt";
 
 //-------------------------------POST-------------------------------------------
 export const createUserController = async ( req: Request, res: Response ) => {
     try {
         const { name, email, password } = req.body;
-
+        
         if(!name || !email || !password){
             return res.status(400).json({error: 'debes llenar todos los datos del usuario'})
         }
-
+        
         const emailValidation = await prisma.users.findUnique({
             where:{
                 email: email
             }
-        })
+        });
+
+        const crypPassword = await bcrypt.hash(password, 10);
         if(emailValidation) {
             return res.status(409).json({error: 'ya hay un usuario con el mismo email'})
         }
 
-        const newUser = await createUser({name, email, password});
+        const newUser = await createUser(name, email, crypPassword);
         const newUserResponse = {
             id: newUser.id,
             name: newUser.name,
@@ -29,8 +31,6 @@ export const createUserController = async ( req: Request, res: Response ) => {
         }
         res.status(201).json(newUserResponse);
     } catch(e){
-
-        // console.error('error 50', error)
         res.status(500).json({error: 'error al crear un usuario <.<', e})
     }
 }

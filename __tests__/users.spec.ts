@@ -1,6 +1,6 @@
 import request  from "supertest";
 import app from "../src/app";
-import { describe } from "node:test";
+// import { describe } from "node:test";
 
 describe("e2e USERS CRUD", ()=> {
     let createdUserId: string;
@@ -14,7 +14,7 @@ describe("e2e USERS CRUD", ()=> {
             password: 'jack123'
         });
 
-    expect(res.status).toBe(201); // Asegúrate que el usuario se haya creado
+    expect(res.status).toBe(201);
     expect(res.body).toHaveProperty('id');
     expect(res.body.name).toBe('Jack cats');
     expect(res.body.email).toBe('jack.c@meows.com');

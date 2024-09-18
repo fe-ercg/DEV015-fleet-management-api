@@ -28,7 +28,7 @@ export const getTrajectoriesController = async (req: Request, res: Response) => 
     }
     
     try {
-        const trajectories: Trajectory[] = await getTrajectories(taxisId, dateReversed);
+        const trajectories: Trajectory[] = await getTrajectories(taxisId, dateStr);
         
         if(trajectories.length === 0){
             return res.status(404).json({error: "taxiId its not found 0w0"})

@@ -12,14 +12,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUserConstroller = exports.patchUsersController = exports.getUsersController = exports.createUserController = void 0;
+exports.deletaAllController = exports.deleteUserConstroller = exports.patchUsersController = exports.getUsersController = exports.createUserController = void 0;
 const usersModel_1 = require("../models/usersModel");
 const client_1 = __importDefault(require("../client"));
+const bcrypt_1 = __importDefault(require("bcrypt"));
+//-------------------------------POST-------------------------------------------
 const createUserController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { name, email, password } = req.body;
-        if (!name || !email || !password) {
-            return res.status(400).json({ message: 'debes llenar todos los datos del usuario' });
+        const crypPassword = yield bcrypt_1.default.hash(password, 10);
+        if (!name && !email && !password) {
+            return res.status(400).json({ error: 'debes llenar todos los datos del usuario' });
         }
         const emailValidation = yield client_1.default.users.findUnique({
             where: {
@@ -27,9 +30,9 @@ const createUserController = (req, res) => __awaiter(void 0, void 0, void 0, fun
             }
         });
         if (emailValidation) {
-            return res.status(409).json({ message: 'ya hay un usuario con el mismo email' });
+            return res.status(409).json({ error: 'ya hay un usuario con el mismo email' });
         }
-        const newUser = yield (0, usersModel_1.createUser)({ name, email, password });
+        const newUser = yield (0, usersModel_1.createUser)(name, email, crypPassword);
         const newUserResponse = {
             id: newUser.id,
             name: newUser.name,
@@ -37,9 +40,8 @@ const createUserController = (req, res) => __awaiter(void 0, void 0, void 0, fun
         };
         res.status(201).json(newUserResponse);
     }
-    catch (error) {
-        // console.error('error 50', error)
-        res.status(500).json({ message: 'error al crear un usuario <.<', error });
+    catch (e) {
+        res.status(500).json({ error: 'error al crear un usuario <.<', e });
     }
 });
 exports.createUserController = createUserController;
@@ -130,3 +132,9 @@ const deleteUserConstroller = (req, res) => __awaiter(void 0, void 0, void 0, fu
     }
 });
 exports.deleteUserConstroller = deleteUserConstroller;
+//---------------------------------DELETE ALL----------------------------------
+const deletaAllController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield (0, usersModel_1.deletaAll)();
+    res.status(204).json();
+});
+exports.deletaAllController = deletaAllController;
