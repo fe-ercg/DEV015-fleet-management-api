@@ -14,7 +14,7 @@ export const getTrajectories = async (taxiId: number, date: string) => {
             trajectories.longitude
         FROM "trajectories"
         JOIN "taxis" ON trajectories.taxi_id = taxis.id
-        WHERE taxi_id = ${findTaxi} AND DATE("date") = ${new Date(findDate)};
+        WHERE taxi_id = ${taxiId} AND DATE("date") = ${new Date(findDate)};
     `;
 
     return results;   

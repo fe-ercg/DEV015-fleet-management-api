@@ -4,6 +4,8 @@ import { getTrajectoriesController, getLatestController } from "../controllers/t
 
 const router = Router();
 
+// router.get('/trajectories', getTrajectoriesController);
+
 router.get('/trajectories', authToken, getTrajectoriesController);
 router.get('/trajectories/latest', authToken, getLatestController);
 
