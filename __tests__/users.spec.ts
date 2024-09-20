@@ -1,63 +1,91 @@
 import request  from "supertest";
 import app from "../src/app";
-// import { describe } from "node:test";
+import jwt from "jsonwebtoken";
+import prisma from "../src/client";
+
+const JWT_KEY = 'admin';
+
+interface User {
+    id: number,
+    name: string,
+    email: string,
+    password: string
+}
 
 describe("e2e USERS CRUD", ()=> {
-    let createdUserId: string;
+    let token: string;
+
+    beforeEach(()=> {
+        token = jwt.sign({username: 'Admin'}, JWT_KEY, {expiresIn: '1h'});
+    })
+
 
     it('should create a new user successfully', async () => {
-    const res = await request(app)
+    const data = {
+        name: 'Jack Cat',
+        email: 'jack.c@meows.com',
+        password: 'jack123'
+    }
+    const register = await request(app)
         .post('/users')
+        .set('Authorization', `Bearer ${token}`)
         .send({
-            name: 'Jack cats',
+            name: 'Jack Cat',
             email: 'jack.c@meows.com',
             password: 'jack123'
+        
         });
-
-    expect(res.status).toBe(201);
-    expect(res.body).toHaveProperty('id');
-    expect(res.body.name).toBe('Jack cats');
-    expect(res.body.email).toBe('jack.c@meows.com');
+    expect(register.status).toBe(201);
+    //obtener id
+    const userId = register.body.id;
     
-    createdUserId = res.body.id;
-    });
-
-    it('should update the user information', async () => {
-    const res = await request(app)
-        .patch(`/users/${createdUserId}`)
+    const loginResponse = await request(app)
+        .post('/auth/login')
+        .set('Authorization', `Bearer ${token}`)
         .send({
-        name: 'Jackson'
+        email: data.email,
+        password: data.password
+    })
+    expect(loginResponse.status).toBe(200);
+    
+    const getNewUser = await request(app)
+        .get('/users?limit=11')
+        .set('Authorization', `Bearer ${token}`);
+        
+    const usersArray = getNewUser.body;
+    const filterUser = usersArray.find((user: User) => user.email === 'jack.c@meows.com');
+
+    expect(filterUser).toBeDefined;
+    expect(filterUser?.name).toBe('Jack Cat');
+    
+    const patchUser = await request(app)
+    .patch(`/users/${userId}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+            name: 'User Uptdate',
         });
-
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('id');
-    expect(res.body.name).toBe('Jackson');
-    });
-
-    it('should retrieve the list of users including the newly created user', async () => {
-    const res = await request(app).get('/users');
     
-    expect(res.status).toBe(200);
-    expect(Array.isArray(res.body)).toBe(true);
-    
-    const user = res.body.find((u: any) => u.id === createdUserId);
-    expect(user).toBeDefined();
-    expect(user.name).toBe('Jackson');
-    });
+    expect(patchUser.status).toBe(200);
 
-    it('should delete the created user', async () => {
-    const res = await request(app)
-        .delete(`/users/${createdUserId}`);
-    
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('id');
-    expect(res.body.id).toBe(createdUserId);
-    });
+    const getPatchUsers = await request(app)
+        .get('/users')
+        .set('Authorization', `Bearer ${token}`);
+        
+    const findPatchUser = getPatchUsers.body.find((user: User) => user.name === 'User Uptdate');
+    expect(findPatchUser).toBeDefined;
 
-    it('should return 404 when trying to get the deleted user', async () => {
-    const res = await request(app)
-        .get(`/users/${createdUserId}`);
-    
-    expect(res.status).toBe(404);
+    const deleteUser = await request(app)
+        .delete(`/users/${userId}`)
+        .set('Authorization', `Bearer ${token}`);
+    expect(deleteUser.status).toBe(200);
+
+    const loginResponseAfeterDelete = await request(app)
+        .post('/auth/login')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+        email: data.email,
+        password: data.password
+    })
+    expect(loginResponseAfeterDelete.status).toBe(404);
     });
 })

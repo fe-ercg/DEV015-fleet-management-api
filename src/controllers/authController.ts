@@ -28,7 +28,6 @@ export const authUserController = async ( req: Request, res: Response ) => {
         )
 
         const succes = {
-            // accessToken: 'wiwo',
             accessToken: token,
             user: {
                 id: user.id,

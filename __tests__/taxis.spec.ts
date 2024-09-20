@@ -1,17 +1,22 @@
 import request from "supertest";
 import app from "../src/app";
-import { describe } from "node:test";
+import jwt from "jsonwebtoken";
 
-// jest.mock("../src/models/taxisModel");
-
-//integridad de datos
+const JWT_KEY = 'admin';
 
 describe("GET /taxis", () => {
+    let token: string;
+
+    beforeEach(()=> {
+        token = jwt.sign({username: 'Admin'}, JWT_KEY, {expiresIn: '1h'});
+    })
+
     it('should return results that contain the "plate" parameter value', async () => {
         const plateValue = 'EF';
 
         const response = await request(app)
             .get("/taxis")
+            .set('Authorization', `Bearer ${token}`)
             .query({plate: plateValue});
 
         expect(response.status).toEqual(200);
